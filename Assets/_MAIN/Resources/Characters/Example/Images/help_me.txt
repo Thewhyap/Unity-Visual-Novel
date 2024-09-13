@@ -1,0 +1,9 @@
+Ici on met les sprites d'un character (single ou multiple pour un sprite sheet) cf(ep6 part1)
+Glisser une image par défaut dans la Hierarchy Characters/Character/Anim/Renderers/Image
+(renommer Image en qqchose du genre fullBody ou autre (creer un 2e s'il y par exemple tête(layer 2) + corps (1)
+séparés en 2 layers) + remplir chacun d une tete ou d un corps) et cocher preserve aspect puis resize l'image
+sans se préoccuper de si les bords dépassent du root object tant que le personnage y reste dedans.
+En utilisant le rect tool dans la scene, faire glisser les anchor points (tirer la croix du milieu)
+du Characters/Character au coin haut-droite et au coin bas-gauche
+(resizer ensuite pour que ca snap parfaitement avec les bords)
+Faire ensuite glisser ce Characters/Character a coté de (ici)../Images

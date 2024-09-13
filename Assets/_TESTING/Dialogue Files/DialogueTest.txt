@@ -1,0 +1,26 @@
+The Best "This is a test !{a} I repeat, this is a test !{c}All clear ?{wa 0.45}I hope so..."
+"Test is going well I hope{wc 1}Here is a long text for you: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+null "Let's see if this function works !" [wait]print_1p("Hello world"), print()
+"Let's see if this second function works !" print_1p("Hello world")
+show The Best as ??? at 1 [0:4,1:happy 4] "Still going well ?"
+
+CreateCharacter(You), CreateCharacter("NOTYOU as someone")
+You.setposition(0), you.setPOSItion(1)
+The Best.setposition(0)
+"still working"
+The best "working"
+You "still working with you"
+The Best.highlight()
+the best.unHiglight()
+[wait]Unhighlight(you)
+
+The Best "yep"
+CreateCharacter("Stella as The Best" -enabled true), CreateCharacter("Mysterious as The Best")
+Show("The Best" Mysterious -immediate false)
+"still yep"
+The BEST.Move(0 1 -spd 0.5)
+"moved ?"
+wait(1), Sort(You NOtYou)
+The Best.SetColor(red)
+"no problemo"
