@@ -15,6 +15,8 @@ public class GraphicObject
     private const string MATERIAL_FIELD_ALPHA = "_Alpha";
     public RawImage renderer;
 
+    private GraphicLayer layer;
+
     public bool isVideo { get { return video != null; } }
     public VideoPlayer video = null;
     public AudioSource audio = null;
@@ -27,6 +29,7 @@ public class GraphicObject
     public GraphicObject(GraphicLayer layer, string graphicPath, Texture texture)
     {
         this.graphicPath = graphicPath;
+        this.layer = layer;
 
         GameObject gameObject = new GameObject();
         gameObject.transform.SetParent(layer.panel);
@@ -43,6 +46,7 @@ public class GraphicObject
     public GraphicObject(GraphicLayer layer, string graphicPath, VideoClip clip, bool useAudio)
     {
         this.graphicPath = graphicPath;
+        this.layer = layer;
 
         GameObject gameObject = new GameObject();
         gameObject.transform.SetParent(layer.panel);
@@ -73,9 +77,11 @@ public class GraphicObject
         video.SetTargetAudioSource(0, audio);
 
         video.frame = 0;
-        video.waitForFirstFrame = true;
         video.Prepare();
         video.Play();
+
+        video.enabled = false;
+        video.enabled = true; //TODO find a better way to do it
     }
 
     private void InitGraphic()
@@ -104,7 +110,7 @@ public class GraphicObject
     }
 
     GraphicPanelManager panelManager => GraphicPanelManager.instance;
-    public Coroutine FadeIn(float speed, Texture blend = null)
+    public Coroutine FadeIn(float speed = 1f, Texture blend = null)
     {
         if (co_fadingOut != null) panelManager.StopCoroutine(co_fadingOut);
 
@@ -115,7 +121,7 @@ public class GraphicObject
         return co_fadingIn;
     }
 
-    public Coroutine FadeOut(float speed, Texture blend = null)
+    public Coroutine FadeOut(float speed = 1f, Texture blend = null)
     {
         if (co_fadingIn != null) panelManager.StopCoroutine(co_fadingIn);
 
@@ -141,10 +147,33 @@ public class GraphicObject
         {
             float opacity = Mathf.MoveTowards(renderer.material.GetFloat(opacityParam), target, speed * Time.deltaTime); //Want to multiply by default transition speed of the panelManager??
             renderer.material.SetFloat(opacityParam, opacity);
+
+            if (isVideo) audio.volume = opacity;
+
             yield return null;
         }
 
         co_fadingIn = null;
         co_fadingOut = null;
+
+        if(target == 0)
+        {
+            Destroy();
+        }
+        else
+        {
+            DestroyOnSameLayers();
+        }
+    }
+
+    private void Destroy()
+    {
+        if (layer.currentGraphic != null && layer.currentGraphic.renderer == renderer) layer.currentGraphic = null;
+        Object.Destroy(renderer.gameObject);
+    }
+
+    private void DestroyOnSameLayers()
+    {
+        layer.DestroyOldGraphics();
     }
 }

@@ -12,16 +12,21 @@ public class GraphicLayerTesting : MonoBehaviour
     IEnumerator Running()
     {
         GraphicPanel panel = GraphicPanelManager.instance.GetPanel("Background");
-        GraphicLayer layer = panel.GetLayer(0, true);
+        GraphicLayer layer0 = panel.GetLayer(0, true);
+        GraphicLayer layer1 = panel.GetLayer(1, true);
 
         yield return new WaitForSeconds(1);
 
         Texture blendTex = Resources.Load<Texture>("Graphics/Transition Effects/hurricane");
-        //layer.SetTexture("Graphics/BG Images/2", blendingTexture: blendTex);
+        layer0.SetTexture("Graphics/BG Images/Spaceshipinterior");
 
 
-        layer.SetVideo("Graphics/BG Videos/Fantasy Landscape");
+        layer1.SetVideo("Graphics/BG Videos/Nebula");
+
+        layer0.SetTexture("Graphics/BG Images/Spaceshipinterior");
 
         //layer.currentGraphic.renderer.material.SetColor("_Color", Color.red);
+
+        yield return null;
     }
 }

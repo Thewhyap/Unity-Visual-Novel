@@ -1,6 +1,13 @@
 The Best "This is a test !{a} I repeat, this is a test !{c}All clear ?{wa 0.45}I hope so..."
 "Test is going well I hope{wc 1}Here is a long text for you: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
+"new line
+new line
+new line\""
+
+
+
+
 null "Let's see if this function works !" [wait]print_1p("Hello world"), print()
 "Let's see if this second function works !" print_1p("Hello world")
 show The Best as ??? at 1 [0:4,1:happy 4] "Still going well ?"

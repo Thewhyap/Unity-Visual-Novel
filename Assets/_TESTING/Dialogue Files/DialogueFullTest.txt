@@ -1,0 +1,29 @@
+"Hi, little tester !"
+"I'm ..." {a}, "Ho wait I forgot to introduce myself..." wa,
+" Just wait a sec please."WA(0.5), "." {wa(0.5)}, "."
+Narrator "Yes that's better, much better."w(1), "Don't you think ?"
+null "Yes I think so", "Well, I myself do not have any name displayed on screen right now !"
+"..."
+Narrator {as} "The best narrator ever" "You will be known as..." wa(3), "The tester !"
+The tester shouting() "WHAT A GREAT NAME !"
+"I LOVE IT !"
+The tester "Now let's try to some fancy stuff, ready ??"
+"Okay I just said \"Now let's try to some fancy stuff, ready ??\"\nNow I'm on a new line because of \\n !\n\nLet's skip two now !"
+"\<cr>I\<> \<i>am \<b>the\<i> \<b>best."
+"Let's say it slowly: \<sp{0.2}> This is slow motion my friend \<c{red}> do you understand ?\<>"
+"\<im> Yes you do" w(2), "\<S{30}> If you made it this far, this is huge !
+Narrator "\<f{\{variable_test_font}}>Now let's try to break the game"
+The tester {as}
+The tester "not broken" "or is it?"
+shout() "stuff"
+
+The tester TyPe()
+"\<f{inexistant_font}> error with the font"
+"\{wrongVariable} error with the variable"
+"\{player.rightVariable}: no error with this variable, but error with this one: \{player.wrongVariable} and this one: \{wrongPlayer.rightVariable}"
+"\{Errrrrrrrrrrrrrroooooooooooorrrrrrrrr"
+"\<''''''''''''''''''''''''''''''''''''"
+
+Narrator "Okay that's pretty neat, now let's try commands !"
+[wait] delete("commands !"), [wait] "commands ?", replace("commands" "\<im>pretty" -r false -i 0)
+delete("inexistant")
