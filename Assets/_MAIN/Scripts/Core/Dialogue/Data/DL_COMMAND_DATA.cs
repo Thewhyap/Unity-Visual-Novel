@@ -7,10 +7,8 @@ namespace DIALOGUE
 {
     public class DL_COMMAND_DATA
     {
-        public List<Command> commands;
-        private const char COMMANDSPLITTER_ID = ',';
+        public Command command;
         private const char ARGUMENTSCONTAINER_ID = '(';
-        private const string WAITCOMMAND_ID = "[wait]";
 
         public struct Command
         {
@@ -19,34 +17,29 @@ namespace DIALOGUE
             public bool waitForCompletion;
         }
 
-        public DL_COMMAND_DATA(string rawCommands)
+        public DL_COMMAND_DATA(string rawCommand, bool shouldWait)
         {
-            commands = RipCommands(rawCommands);
+            command = GetCommandFromString(rawCommand);
+            command.waitForCompletion = shouldWait;
         }
 
-        private List<Command> RipCommands(string rawCommands)
+        private Command GetCommandFromString(string rawCommand)
         {
-            string[] data = rawCommands.Split(COMMANDSPLITTER_ID, System.StringSplitOptions.RemoveEmptyEntries);
-            List<Command> result = new List<Command>();
+            Command command = new();
+            int index = rawCommand.IndexOf(ARGUMENTSCONTAINER_ID);
+            command.name = rawCommand.Substring(0, index).Trim();
 
-            foreach (string cmd in data)
+            /*if (command.name.ToLower().StartsWith(WAITCOMMAND_ID))
             {
-                Command command = new Command();
-                int index = cmd.IndexOf(ARGUMENTSCONTAINER_ID);
-                command.name = cmd.Substring(0, index).Trim();
-
-                if (command.name.ToLower().StartsWith(WAITCOMMAND_ID))
-                {
-                    command.name = command.name.Substring(WAITCOMMAND_ID.Length);
-                    command.waitForCompletion = true;
-                }
-                else command.waitForCompletion = false;
-
-                command.arguments = GetArgs(cmd.Substring(index + 1, cmd.Length - index - 2));
-                result.Add(command);
+                command.name = command.name.Substring(WAITCOMMAND_ID.Length);
+                command.waitForCompletion = true;
             }
+            else command.waitForCompletion = false;
 
-            return result;
+            command.arguments = GetArgs(cmd.Substring(index + 1, cmd.Length - index - 2));
+            result.Add(command);*/
+
+            return command;
         }
 
         private string[] GetArgs(string args)

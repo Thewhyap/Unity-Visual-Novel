@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEditor.Build.Content;
 using UnityEngine;
+using UnityEngine.Windows;
 
 namespace DIALOGUE
 {
@@ -10,69 +13,84 @@ namespace DIALOGUE
 
         private const string commandRegexPattern = @"[\w\[\]]*[^\s]\(";
 
+        private const char SEPARATOR = ',';
+        private const char ESCAPE_CHAR = '\\';
+        private const char IN_TEXT_SEPARATOR = '"';
 
-        public static DIALOGUE_LINE Parse(string rawLine)
+        private const string WAIT_COMMAND = @"\[\s*(?i:wait)\s*\]";
+        private const string WAIT_COMMAND_SHORT = @"\[\s*(?i:w)\s*\]";
+        private const string AS_COMMAND = @"\{\s*(?i:as)\s*\}";
+
+        public static List<DIALOGUE_LINE> Parse(string rawLine)
         {
-            Debug.Log($"Parsing line: '{rawLine}'");
+            List<DIALOGUE_LINE> result = new();
 
-            (string speaker, string dialogue, string commands) = RipContent(rawLine);
-
-            return new DIALOGUE_LINE(speaker, dialogue, commands);
+            foreach(string parsedLine in SplitRawLine(rawLine))
+            {
+                result.Add(GetDataFromLine(parsedLine.Trim()));
+            }
+            return result;
         }
 
-        private static (string, string, string) RipContent(string rawLine)
+        private static List<string> SplitRawLine(string rawLine)
         {
-            string speaker = "", dialogue = "", commands = "";
+            List<string> parsedLines = new();
 
-            int dialogueStart = -1;
-            int dialogueEnd = -1;
+            bool inText = false;
             bool isEscaped = false;
+            int lastIndex = 0;
 
-            for (int i = 0; i < rawLine.Length; i++)
+            for(int i = 0; i < rawLine.Length; i++)
             {
-                char current = rawLine[i];
-                if (current == '\\') isEscaped = !isEscaped;
-                else if (current == '"' && !isEscaped)
+                char c = rawLine[i];
+                if (c == ESCAPE_CHAR) isEscaped = !isEscaped;
+                else if (c == IN_TEXT_SEPARATOR && !isEscaped) inText = !inText;
+                else if (c == SEPARATOR && !inText)
                 {
-                    if (dialogueStart == -1) dialogueStart = i;
-                    else if (dialogueEnd == -1)
-                    {
-                        dialogueEnd = i;
-                        break;
-                    }
-                }
-                else isEscaped = false;
-            }
-
-            Regex commandRegex = new Regex(commandRegexPattern);
-            MatchCollection matches = commandRegex.Matches(rawLine);
-            int commandStart = -1;
-            foreach(Match match in matches)
-            {
-                if (match.Index < dialogueStart || match.Index > dialogueEnd)
-                {
-                    commandStart = match.Index;
-                    break;
+                    parsedLines.Add(rawLine[lastIndex..i]);
+                    lastIndex = i + 1;
                 }
             }
-            if(commandStart != -1 && (dialogueStart == -1) && (dialogueEnd == -1))
+
+            if(lastIndex < rawLine.Length) parsedLines.Add(rawLine[lastIndex..]);
+            return parsedLines;
+        }
+
+        private static DIALOGUE_LINE GetDataFromLine(string parsedLine)
+        {
+            string elementPattern = @"^(?<elementCount>\s*(\+\s*)+)?\s*";
+            string waitPattern = $@"(?<wait>{WAIT_COMMAND}|{WAIT_COMMAND_SHORT})?\s*";
+            string namePattern = @"(?<name>[^\(\s""]+(?=\s|$))?";
+            string displayNamePattern = $@"(?(name)\s*{AS_COMMAND}\s*(?:""(?<displayName>(?:[^""\\]|\\.)*)""|(?<displayName>\w+)))?";
+            string actionPattern = @"(?(name)\s*(?<action>\w+\((?:[^()""\\]|""(?:[^""\\]|\\.)*""|\\.)*\)))?";
+            string textPattern = @"\s*(?:""(?<text>(?:[^""\\]|\\.)*)""\s*)?";
+            string commandPattern = @"(?<command>\w+\((?:[^()""\\]|""(?:[^""\\]|\\.)*""|\\.)*\))?";
+
+            string pattern = $@"^{elementPattern}{waitPattern}{namePattern}{displayNamePattern}{actionPattern}{textPattern}{commandPattern}$";
+            Match match = Regex.Match(parsedLine, pattern);
+
+            int elementLayer = 0;
+            bool shouldWait = false;
+            string speaker = null, displayName = null, action = null, dialogue = null, command = null;
+
+            if (match.Success)
             {
-                return ("", "", rawLine.Trim());
+                elementLayer = match.Groups["elementCount"].Value.Count(c => c == '+');
+                shouldWait = !string.IsNullOrEmpty(match.Groups["wait"].Value);
+                speaker = match.Groups["name"].Value;
+                displayName = match.Groups["displayName"].Value;
+                action = match.Groups["action"].Value;
+                dialogue = match.Groups["text"].Value;
+                command = match.Groups["command"].Value;
+
+                Debug.Log(elementLayer + ", shouldWait: " + shouldWait + ", speaker: " + speaker + ", dipslayName: " + displayName + ", action: " + action + ", dialogue: " + dialogue + ", command: " + command);
+            }
+            else
+            {
+                Debug.Log("Parsed line: \"" + parsedLine + "\" does not match the pattern.");
             }
 
-            if (dialogueStart != -1 && dialogueEnd != -1 && (commandStart == -1 || commandStart > dialogueEnd))
-            {
-                speaker = rawLine.Substring(0, dialogueStart).Trim();
-                dialogue = rawLine.Substring(dialogueStart + 1, dialogueEnd - dialogueStart - 1).Replace("\\\"", "\"");
-                if(commandStart != -1)
-                {
-                    commands = rawLine.Substring(commandStart).Trim();
-                }
-            }
-            else if (commandStart != -1 && dialogueStart > commandStart) commands = rawLine;
-            else dialogue = rawLine;
-
-            return (speaker, dialogue, commands);
+            return new DIALOGUE_LINE(elementLayer, shouldWait, speaker, displayName, action, dialogue, command);
         }
     }
 }

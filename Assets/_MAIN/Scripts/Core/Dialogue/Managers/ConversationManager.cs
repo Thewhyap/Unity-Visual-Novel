@@ -47,19 +47,24 @@ namespace DIALOGUE
         {
             for(int i = 0; i < conversation.Count; i++)
             {
+                // Skip empty lines
                 if (string.IsNullOrWhiteSpace(conversation[i])) continue;
 
-                DIALOGUE_LINE line = DialogueParser.Parse(conversation[i]);
+                List<DIALOGUE_LINE> parsedLines = DialogueParser.Parse(conversation[i]);
 
-                if (line.hasDialogue) yield return Line_RunDialogue(line);
-
-                if (line.hasCommands) yield return Line_RunCommands(line);
-
-                if (line.hasDialogue)
+                foreach(DIALOGUE_LINE parsedLine in parsedLines)
                 {
-                    yield return WaitForUserInput();
+                    // There are 3 types of lines: dialogue, command, element
+                    if (parsedLine.hasDialogue) yield return Line_RunDialogue(parsedLine);
+                    if (parsedLine.hasCommand) yield return Line_RunCommand(parsedLine);
 
-                    CommandManager.instance.StopAllProcesses();
+                    // Default behaviour for dialogue lines
+                    if (parsedLine.hasDialogue)
+                    {
+                        yield return WaitForUserInput();
+
+                        CommandManager.instance.StopAllProcesses();
+                    }
                 }
             }
         }
@@ -92,28 +97,26 @@ namespace DIALOGUE
             }
         }
 
-        IEnumerator Line_RunCommands(DIALOGUE_LINE line)
+        IEnumerator Line_RunCommand(DIALOGUE_LINE line)
         {
-            List<DL_COMMAND_DATA.Command> commands = line.commandData.commands;
+            DL_COMMAND_DATA.Command command = line.commandData.command;
 
-            foreach(DL_COMMAND_DATA.Command command in commands)
+            if (command.waitForCompletion || command.name == "wait")
             {
-                if (command.waitForCompletion || command.name == "wait")
+                CoroutineWrapper cw = CommandManager.instance.Execute(command.name, command.arguments);
+                while (!cw.isDone)
                 {
-                    CoroutineWrapper cw = CommandManager.instance.Execute(command.name, command.arguments);
-                    while (!cw.isDone)
+                    if (userPrompt)
                     {
-                        if (userPrompt)
-                        {
-                            CommandManager.instance.StopCurrentProcess();
-                            userPrompt = false;
-                        }
+                        CommandManager.instance.StopCurrentProcess();
+                        userPrompt = false;
+                    }
                             
-                        yield return null;
-                    };
-                }
-                else CommandManager.instance.Execute(command.name, command.arguments);
+                    yield return null;
+                };
             }
+            else CommandManager.instance.Execute(command.name, command.arguments);
+
             yield return null;
         }
 

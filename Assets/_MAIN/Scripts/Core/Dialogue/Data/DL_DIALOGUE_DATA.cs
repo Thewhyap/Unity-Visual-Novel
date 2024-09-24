@@ -9,7 +9,7 @@ namespace DIALOGUE
         public List<DIALOGUE_SEGMENT> segments;
         private const string segmentIdentifierPattern = @"\{[ca]\}|\{w[ca]\s\d*\.?\d*\}";
 
-        public DL_DIALOGUE_DATA(string rawDialogue)
+        public DL_DIALOGUE_DATA(string rawDialogue, string action)
         {
             segments = RipSegments(rawDialogue);
         }

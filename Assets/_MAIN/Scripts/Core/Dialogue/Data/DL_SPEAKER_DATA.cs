@@ -37,7 +37,7 @@ namespace DIALOGUE
             return rawSpeaker;
         }
 
-        public DL_SPEAKER_DATA(string rawSpeaker)
+        public DL_SPEAKER_DATA(string rawSpeaker, string displayName)
         {
             rawSpeaker = ProcessKeywords(rawSpeaker);
 
