@@ -14,7 +14,6 @@
 | `"text"` | The dialogue text. Starts and ends with quotes. **(optional)** |
 | `command(value -param paramValue)` | Command to execute after the dialogue. **(optional)** |
 | `,` | End of the line. **(optional)** |
----
 
 #### Order and conditions
 
@@ -47,7 +46,7 @@
 - If the element layer is too high (no `+` means **layer = 0**), element layer will reduce until it reaches 0.
 - `displayName` can have special characters but not a line break.
 
-&nbsp;
+---
 
 ### Variables
 
@@ -65,9 +64,8 @@ Variables can be used in `text`, `characterNames`, `customNames`, and parameters
 |-------------|---------------|
 | `character` | Get the current character |
 | `displayname` | Get the current custom name of the character |
----
 
-&nbsp;
+---
 
 ### Tags and special characters
 
@@ -79,7 +77,6 @@ Special characters must be used inside quotes.
 | `<\>` | Displays `\` |
 | `\{` | Displays `{` |
 | `\<` | Displays `<` |
----
 
 The parsing system implemented in this engine uses TextMeshPro RichText.
 
@@ -87,7 +84,7 @@ The full list of tags can be find in the Unity TextMeshPro RichText documentatio
 
 Here are some basic examples:
 |**Tag**|**Description**|
-|-------------|---------------|
+|-------|---------------|
 | `<br>` | Break line |
 | `<b></b>` | Displays the text inside in **bold** |
 | `<i></i>` | Displays the text inside in *italic* |
@@ -96,12 +93,11 @@ Here are some basic examples:
 | `<font="fontName"></font>` | Displays the text inside in another FONT |
 | `<size=x></s>` | Displays the text inside in another SIZE |
 | `<color="colorName"></color>` | Displays the text inside in another COLOR |
----
 
 - If `<x=newValue>` is called before the ending `</x>`, it will override the previous value.
 - Some characters (Ex: chinese or mathematic symbols, emojis etc.) may not be parsed correctly. You will need to change the font. If the current font can't handle the character it will display `▯`.
 
-&nbsp;
+---
 
 ### Special character names
 
@@ -109,7 +105,7 @@ Here are some basic examples:
 |-----------------|---------------|
 | `null` | Set no character |
 
-&nbsp;
+---
 
 ### Parameters
 
@@ -117,6 +113,8 @@ Parameters can be added inside `actions` and `commands`. There is 2 types of par
 
 - Optionnal parameters are called like this: `-paramName paramValue`.
 - Non-optionnal parameters are called without using `-paramName`.
+
+---
 
 ### Actions
 
@@ -132,7 +130,6 @@ Parameters can be added inside `actions` and `commands`. There is 2 types of par
 | `-im bool` | Same as using `-sp 0`, displays the text immediately |
 | `-a string` | Displays the text with a different SOUND (Empty string: SOUND = none) |
 | `-n string` | Displays a custom name |
----
 
 - All actions have predefined values for the parameters but you can still change them if you want.
 
@@ -154,9 +151,8 @@ Parameters can be added inside `actions` and `commands`. There is 2 types of par
 | `sad()` | `-n "{displayName} (reading)"` |
 | `excited()` | `-n "{displayName} (reading)"` |
 | `tired()` | `-n "{displayName} (reading)"` |
----
 
-&nbsp;
+---
 
 ### Commands
 
@@ -237,15 +233,14 @@ Special commands can be used inside other special commands, in that case add ano
 | `elseif()` | `condition` | / | Used after a `if()` or a `else if()`, if there is none, this will act as a `if()` command. Elements of this command are lines that will be parsed only if the condition is true and the previous `if()`/`elseif()` are false. <br><br> - `condition`: string that will be parsed to make the condition. ([refer to 1.3.4](#211-conditions)) |
 | `else()` | / | / | Used after a `if()` or a `else if()`, if there is none, this will act as a `if()` command. Elements of this command are lines that will be parsed only if the previous `if()`/`elseif()` are false. |
 | `repeat()` | `n` | / | Go `n` times through all the elements of this command. <br><br> - `n`: positive int, set the number of times that elements are repeated. |
----
+
 |**Subcommand**|**parameters**|**Subcommand of**|**Description**|
 |--------------|--------------|-----------------|---------------|
 | `choice()`/`c()` | `-t string` , `-to string` | `choices()` | `choice()` is a special command (that have no specific subcommands). Elements of this command are lines that will be parsed only if this option is chosen by the user. <br><br> - `-t`: used to set the text of the choice. <br> - `-to`: used to set a dialogue file path to go to if this option is chosen by the user. ([refer to 1.3.4](#1-paths)) |
----
 
 Subcommands can only be used as elements of their respective commands.
 
-&nbsp;
+---
 
 ## Glossary
 
