@@ -25,14 +25,13 @@
 #### Special scenarios
 
 - If you want the dipslay name of the character to be nothing, simply use `""` as the `customName`.
-- Setting a dialogue `""` without setting a character will use the previously selected character.
+- Setting a dialogue without setting a character will use the previously selected character.
 - Actions persist through the lines until a `characterName` is set.
 
 #### Default values
 
 - It won't wait for the command (if there is one) to end before you can parse the next line.
 - Character is null.
-- Action is `talk()`.
 - layer = 0
 - setting a dialogue will replace the previous one
 
@@ -43,10 +42,10 @@
 - If you put no text at all, the line will not be considered as a dialogue.
 - If line is a dialogue, it will wait for user input. (except if there is a command saying otherwise).
 - If line is not a dialogue, it won't wait for user input. (use the `wu()` command to wait for a user input).
-- `characterName`, parameters names, `{as}`, `[wait]`, variables, command names and action names are all case insensitive.
+- `characterName`, parameters names, tags, `{as}`, `[wait]`, variables, command names and action names are all case insensitive.
 - `characterName` must have at least an empty space before the next element, and should not be a number or contains any `(` or `"`.
 - If the element layer is too high (no `+` means **layer = 0**), element layer will reduce until it reaches 0.
-
+- `displayName` can have special characters but not a line break.
 
 &nbsp;
 
@@ -68,31 +67,39 @@ Variables can be used in `text`, `characterNames`, `customNames`, and parameters
 | `displayname` | Get the current custom name of the character |
 ---
 
-### Special characters
+&nbsp;
+
+### Tags and special characters
 
 Special characters must be used inside quotes.
 
 |**Character**|**Description**|
 |-------------|---------------|
 | `\"` | Displays `"` |
-| `\n` | Break line |
-| `\\` | Displays `\` |
+| `<\>` | Displays `\` |
 | `\{` | Displays `{` |
 | `\<` | Displays `<` |
-| `<b text \b>` | Displays the text inside in **bold** |
-| `<i text \i>` | Displays the text inside in *italic* |
-| `<cr text \cr>` | Displays the text inside crossed-out |
-| `<f{FONT_NAME} text \f>` | Displays the text inside in another FONT |
-| `<s{INT} text \s>` | Displays the text inside in another SIZE |
-| `<c{COLOR_NAME} text \c>` | Displays the text inside in another COLOR |
-| `<speed{FLOAT} text \speed>` or `<sp{} \sp>` | Displays the text inside with a different SPEED (if FLOAT == 0, displays the text immediately) |
-| `<im text \im>` | Same as using `\speed{0}`, displays the text immediately |
-| `<a{SOUND_NAME} text \a>` | Displays the text with a different SOUND (Empty string: SOUND = none) |
-| `<r text \r>` | Displays the text inside in reverse |
-| `\>` | Ends the last `<x` |
 ---
 
-- If `<x{NEW_VALUE}` is called before the ending `\x>`, it will replace the previous value.
+The parsing system implemented in this engine uses TextMeshPro RichText.
+
+The full list of tags can be find in the Unity TextMeshPro RichText documentation: [https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichText.html]
+
+Here are some basic examples:
+|**Tag**|**Description**|
+|-------------|---------------|
+| `<br>` | Break line |
+| `<b></b>` | Displays the text inside in **bold** |
+| `<i></i>` | Displays the text inside in *italic* |
+|`<underline></underline>`| Displays the text inside is underlined |
+|`<strikethrough></strikethrough>`| Displays the text inside crossed-out |
+| `<font="fontName"></font>` | Displays the text inside in another FONT |
+| `<size=x></s>` | Displays the text inside in another SIZE |
+| `<color="colorName"></color>` | Displays the text inside in another COLOR |
+---
+
+- If `<x=newValue>` is called before the ending `</x>`, it will override the previous value.
+- Some characters (Ex: chinese or mathematic symbols, emojis etc.) may not be parsed correctly. You will need to change the font. If the current font can't handle the character it will display `▯`.
 
 &nbsp;
 
@@ -171,6 +178,10 @@ Parameters can be added inside `actions` and `commands`. There is 2 types of par
 |-----------|--------------|---------------|
 | `delete()` | `stringToDelete` , `-i string` , `-r bool` | Delete the `stringToDelete` inside the text. <br><br> - `stringToDelete`: string, set what part of the text you want to delete. If `stringToDelete` == `""` : delete everything. <br> - `-i`: delete the string at the wanted occurence (starting with 1) (string must be an int or a list of int ([to create lists refer to 1.2.1](#1-paths))). If `-i` == `0` : delete every occurence (0 by default) <br> - `-r`: set if the text has to be deleted in reverse (*right to left*) (true by default) |
 | `replace()` | `stringToReplace` , `stringReplacing` , `-i string` , `-r bool` | Replace the `stringToReplace` inside the text by the `stringReplacing`. <br><br> - `stringToReplace`: string, set what part of the text you want to replace. If `stringToReplace` == `""` : replace everything. <br> - `stringReplacing`: string, set the replacing string. <br> - `-i`: replace the string at the wanted occurence (starting with 1) (string must be an int or a list of int ([to create lists refer to 1.2.1](#1-paths))). If `-i` == `0` : delete every occurence (0 by default) <br> - `-r`: set if the text has to be deleted in reverse before being replaced (*right to left*) (true by default) |
+| `setTextSpeed()` | `speed` , `-t posint` | Set the speed of the next dialogues. <br><br> - `speed`: positive float, set the target speed. (`0` is immediate) <br> - `-t`: Set the transition speed in seconds (`0` (instant) by default). |
+| `setTextReverse()` | / | Next dialogues are going to be displayed in reverse. (starting from the last character) |
+| `setTextAudio()` | `audio` | Set the audio of the next dialogues. <br><br> - `audio`: string, set the audio that will be played at each character. |
+| `setTextImmediate()` | / | Displays next dialogues immediatly (same as doing `setTextSpeed(0)`) |
 
 #### Logic commands
 

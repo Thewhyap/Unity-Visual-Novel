@@ -46,7 +46,6 @@ This engine is free to use for **both non-commercial and commercial purposes** u
 
 ### Usage Rights:
 
-- **Attribution is required**: Please give credit to the engine in a way that best fits your project (e.g., in the credits or documentation).
 - **The use of the engine for commercial purposes is restricted to solo developers**. If you are part of a team or company, or if multiple developers are contributing, please contact me for permission before use.
 
 **Not required but appreciated:** Please contact me, so I can know about your project ! (Just because I'm curious)
@@ -74,3 +73,17 @@ if audio problems: see episode 15 part 2
 3. make GraphicLayer methods Coroutines and not void (maybe? see episode 14 part 4 if problems > 20mins)
 4. InitGraphic in GraphicObject get immediate as param and if immediate then startingOpacity = 1f and not always 0 (same for audio.volume)
 5.For commands add shortcuts (like a HOME_DIRECTORY symbol to go quicker and not having to write it each time)
+
+## Ideas
+
+Langage system, dislexic font mode, let the user setting custom modes and options
+
+when launching the game put "created using (team) VisualNovelEngine" intro and then letting the user put if he wants his own intro -> create a conf file for the user where he can change params as he want.
+
+**configuration.txt :**
+
+- intro: false (or just search for conf image or video and if not is false, same for introAudio)
+- intro.skippable: false
+- langage.default:
+- settings.volume: advanced (basic)
+- settings.audio: advanced (basic)

@@ -11,7 +11,7 @@ public class GraphicLayerTesting : MonoBehaviour
 
     IEnumerator Running()
     {
-        GraphicPanel panel = GraphicPanelManager.instance.GetPanel("Background");
+        GraphicPanel panel = GraphicPanelManager.Instance.GetPanel("Background");
         GraphicLayer layer0 = panel.GetLayer(0, true);
         GraphicLayer layer1 = panel.GetLayer(1, true);
 
