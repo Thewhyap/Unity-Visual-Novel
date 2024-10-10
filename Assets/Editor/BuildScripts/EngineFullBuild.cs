@@ -4,7 +4,7 @@ using System.IO;
 
 public class EngineFullBuild
 {
-    [MenuItem("Build/Build Full Version Engine ")]
+    [MenuItem("Build/Build Full Version Engine")]
     public static void BuildFullVersionEngine()
     {
         // Build options
