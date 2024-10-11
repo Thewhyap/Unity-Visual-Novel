@@ -45,7 +45,7 @@ For more informations on how to use this engine, refer to these files:
 
 If you have any questions, would like to inquire about licensing, (or just want to chat, who knows?) feel free to reach out.
 
-- **Email**: [your.email@example.com](mailto:your.email@example.com)
+- **Email**: [apexbaguette.studio@gmail.com](mailto:apexbaguette.studio@gmail.com)
 - **More about me**: There's nothing more to say about me.
 
 ## Donations and Support
@@ -53,7 +53,6 @@ If you have any questions, would like to inquire about licensing, (or just want 
 If you'd like to support the development of this project, you can do so via:
 
 - **Buy Me a Coffee**: [buymeacoffee.com/apexbaguette](https://buymeacoffee.com/apexbaguette)
-- **Patreon**: [patreon.com/YourUsername](https://www.patreon.com/YourUsername)
 
 Thank you for your support!
 
