@@ -1,0 +1,10 @@
+"{variable}"
+Adrien "",
+"Yasss"
+"Hello 😊!"
+"Line 1<br>Line 2"
+"Line 1\\n \t Line 2"
+"你好!"
+
+
+ + + [w]{playerName} {as} "Elyanus" shouting(-c red) "Comment va Tina?" command("this is an example")
