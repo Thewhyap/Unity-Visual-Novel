@@ -52,7 +52,7 @@ If you have any questions, would like to inquire about licensing, (or just want 
 
 If you'd like to support the development of this project, you can do so via:
 
-- **Buy Me a Coffee**: [buymeacoffee.com/YourUsername](https://www.buymeacoffee.com/YourUsername)
+- **Buy Me a Coffee**: [buymeacoffee.com/apexbaguette](https://buymeacoffee.com/apexbaguette)
 - **Patreon**: [patreon.com/YourUsername](https://www.patreon.com/YourUsername)
 
 Thank you for your support!
