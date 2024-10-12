@@ -2,16 +2,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Alert : MonoBehaviour
 {
     public static Alert Instance { get; private set; }
 
+    public GameObject background;
     public GameObject panel;
     public TextMeshProUGUI messageText;
     public Button yesButton;
     public Button noButton;
-    public GameObject background;
+
+    private const string MAIN_CANVAS = "Canvas - Main";
+    private Transform alert;
 
     private void Awake()
     {
@@ -19,6 +23,7 @@ public class Alert : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            alert = transform.GetChild(0);
             Close();
         }
         else
@@ -30,6 +35,10 @@ public class Alert : MonoBehaviour
     public void Show(string message, string yesText = "Yes", string noText = "No", UnityAction yesAction = null, UnityAction noAction = null, UnityAction backgroundClickAction = null)
     {
         if (Instance.gameObject.activeSelf) return;
+
+        GameObject mainCanvas = GameObject.Find(MAIN_CANVAS);
+        if (mainCanvas != null) Reparent(mainCanvas.transform);
+        else Debug.LogError($"'{MAIN_CANVAS}' not found!");
 
         messageText.text = message;
         yesButton.onClick.RemoveAllListeners();
@@ -64,10 +73,23 @@ public class Alert : MonoBehaviour
         }
 
         Instance.gameObject.SetActive(true);
+        Instance.transform.SetAsLastSibling();
     }
 
     public void Close()
     {
+        Reparent(transform);
         Instance.gameObject.SetActive(false);
+    }
+
+    private void Reparent(Transform newParent)
+    {
+        Vector3 localPosition = alert.localPosition;
+        Vector3 localScale = alert.localScale;
+
+        alert.SetParent(newParent, true);
+
+        alert.localPosition = new Vector3(localPosition.x, localPosition.y, localPosition.z);
+        alert.localScale = new Vector3(localScale.x, localScale.y, localScale.z);
     }
 }
