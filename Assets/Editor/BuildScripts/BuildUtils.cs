@@ -4,11 +4,12 @@ using System.IO;
 
 public static class BuildUtils
 {
-    private const string projectName = "TaleTaleEngine.exe";
+    private const string PROJECT_NAME = "TaleTaleEngine.exe";
+    public const string SCENES_PATH = "Assets/Scenes/";
 
     public static void BuildProject(string[] scenes, string buildPath, BuildTarget buildTarget, BuildOptions buildOptions)
     {
-        string projectPath = Path.Combine(buildPath, projectName);
+        string projectPath = Path.Combine(buildPath, PROJECT_NAME);
         BuildPipeline.BuildPlayer(scenes, projectPath, buildTarget, buildOptions);
         Debug.Log("Build completed at: " + projectPath);
     }

@@ -1,12 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
+
+    private SaveData currentSaveData = null;
+    private bool isCurrentDataSaved = true;
 
     private void Awake()
     {
@@ -21,29 +21,79 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public void LoadSave(string saveSlot)
+    public SaveData GetCurrentSaveData(bool dataWillBeUpdated = true)
     {
-        GameBuilder.Instance.CreateGameWithData(SaveSystem.Load(saveSlot));
+        if(dataWillBeUpdated) isCurrentDataSaved = false;
+        return currentSaveData;
     }
 
-    public void LoadLatest()
+    public void SetCurrentSaveData(SaveData data)
     {
-        GameBuilder.Instance.CreateGameWithData(SaveSystem.LoadLatest());
+        isCurrentDataSaved = false;
+        currentSaveData = data;
     }
 
-    public void DeleteSave(string saveSlot)
+    public async void BackToMainMenu()
     {
-        AlertsManager.Instance.ToggleDeleteSaveConfirmationAlert(saveSlot);
+        bool shouldProcede = true;
+        if (!isCurrentDataSaved) shouldProcede = await AlertsManager.Instance.ToggleUnsavedDataAlert();
+        if (shouldProcede)
+        {
+            isCurrentDataSaved = true;
+            currentSaveData = null;
+            SceneManager.LoadScene("MainMenuScene");
+        }   
     }
 
-    public void Save(SaveData data, string saveSlot)
+    public async void LoadSave(string saveSlot)
     {
-        if (SaveSystem.IsSaveExisting(saveSlot)) AlertsManager.Instance.ToggleSaveAlreadyExistsAlert(data, saveSlot);
-        else SaveSystem.Save(data, saveSlot);
+        bool shouldProcede = true;
+        if (!isCurrentDataSaved) shouldProcede = await AlertsManager.Instance.ToggleUnsavedDataAlert();
+        if (shouldProcede)
+        {
+            isCurrentDataSaved = true;
+            currentSaveData = null;
+            SaveSystem.Load(saveSlot);
+        }
     }
 
-    public void RenameSave(SaveData data, string newName)
+    public async void LoadLatest()
     {
+        bool shouldProcede = true;
+        if (!isCurrentDataSaved) shouldProcede = await AlertsManager.Instance.ToggleUnsavedDataAlert();
+        if (shouldProcede)
+        {
+            isCurrentDataSaved = true;
+            currentSaveData = null;
+            SaveSystem.LoadLatest();
+        }
+    }
+
+    public async void DeleteSave(string saveSlot)
+    {
+        bool shouldDelete = await AlertsManager.Instance.ToggleDeleteSaveConfirmationAlert();
+        if (shouldDelete)
+        {
+            isCurrentDataSaved = false;
+            SaveSystem.Delete(saveSlot);
+        }
+    }
+
+    public async void Save(string saveSlot)
+    {
+        bool shouldSave = true;
+        if (SaveSystem.IsSaveExisting(saveSlot)) shouldSave = await AlertsManager.Instance.ToggleSaveAlreadyExistsAlert();
+        if(shouldSave)
+        {
+            isCurrentDataSaved = true;
+            SaveSystem.Save(currentSaveData, saveSlot);
+        }
+    }
+
+    public void RenameSave(string saveSlot, string newName)
+    {
+        SaveData data = SaveSystem.Load(saveSlot);
         data.saveName = newName;
+        SaveSystem.Save(data, saveSlot);
     }
 }

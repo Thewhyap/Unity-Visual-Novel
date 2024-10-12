@@ -8,7 +8,7 @@ public class EngineFullBuild
     public static void BuildFullVersionEngine()
     {
         // Build options
-        string[] scenes = { "Assets/Scenes/IntroScene.unity", "Assets/Scenes/MainMenuScene.unity", "Assets/Scenes/MainScene.unity" };
+        string[] scenes = { $"{BuildUtils.SCENES_PATH}IntroScene.unity", $"{BuildUtils.SCENES_PATH}MainMenuScene.unity", $"{BuildUtils.SCENES_PATH}MainScene.unity" , $"{BuildUtils.SCENES_PATH}SettingsScene.unity" };
         string buildPath = "Build/EngineFullBuild";
         string sourceFolder = "AssetsRepository"; // (this should be in the root of the Unity project)
 
