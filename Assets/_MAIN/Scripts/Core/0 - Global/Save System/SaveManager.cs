@@ -1,11 +1,12 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
 
-    private SaveData currentSaveData = null;
+    private GameData currentSaveData = null;
     private bool isCurrentDataSaved = true;
 
     private void Awake()
@@ -21,13 +22,13 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public SaveData GetCurrentSaveData(bool dataWillBeUpdated = true)
+    public GameData GetCurrentSaveData(bool dataWillBeUpdated = true)
     {
         if(dataWillBeUpdated) isCurrentDataSaved = false;
         return currentSaveData;
     }
 
-    public void SetCurrentSaveData(SaveData data)
+    public void SetCurrentSaveData(GameData data)
     {
         isCurrentDataSaved = false;
         currentSaveData = data;
@@ -45,7 +46,7 @@ public class SaveManager : MonoBehaviour
         }   
     }
 
-    public async void LoadSave(string saveSlot)
+    public async void LoadSave(int saveSlot)
     {
         bool shouldProcede = true;
         if (!isCurrentDataSaved) shouldProcede = await AlertsManager.Instance.ToggleUnsavedDataAlert();
@@ -69,17 +70,17 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public async void DeleteSave(string saveSlot)
+    public async void DeleteSave(int saveSlot)
     {
         bool shouldDelete = await AlertsManager.Instance.ToggleDeleteSaveConfirmationAlert();
         if (shouldDelete)
         {
-            isCurrentDataSaved = false;
+            isCurrentDataSaved = false; //TODO not false if you delete something else than your current save
             SaveSystem.Delete(saveSlot);
         }
     }
 
-    public async void Save(string saveSlot)
+    public async void Save(int saveSlot)
     {
         bool shouldSave = true;
         if (SaveSystem.IsSaveExisting(saveSlot)) shouldSave = await AlertsManager.Instance.ToggleSaveAlreadyExistsAlert();
@@ -90,10 +91,10 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public void RenameSave(string saveSlot, string newName)
+    public void RenameSave(int saveSlot, string newName)
     {
-        SaveData data = SaveSystem.Load(saveSlot);
-        data.saveName = newName;
-        SaveSystem.Save(data, saveSlot);
+        HeaderData header = SaveSystem.GetHeader(saveSlot);
+        header.saveName = newName;
+        SaveSystem.SetHeader(header);
     }
 }

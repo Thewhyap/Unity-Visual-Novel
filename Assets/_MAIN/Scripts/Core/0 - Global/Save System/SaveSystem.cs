@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -6,58 +7,85 @@ using UnityEngine;
 
 public class SaveSystem : MonoBehaviour
 {
-    private static readonly string encryptionKey = "YourEncryptionKey123"; //TODO
-    private static string SavePath(string saveName) => Application.persistentDataPath + "/saves/" + saveName + ".sav";
-    public static bool IsSaveExisting(string saveSlot) => File.Exists(SavePath(saveSlot));
+    private static readonly string ENCRYPTION_KEY = "YourEncryptionKey123"; //TODO
+    private static readonly string SAVE_NAME = "Save_";
+    private static readonly string HEADERS_PATH = Path.Combine(Application.persistentDataPath, $"{SAVE_NAME}headers.json");
+    private static string SavePath(int saveSlot) => Application.persistentDataPath + "/saves/" + SAVE_NAME + saveSlot + ".sav";
+    public static bool IsSaveExisting(int saveSlot) => File.Exists(SavePath(saveSlot));
 
-    public static void Save(SaveData data, string saveSlot)
+    public static List<HeaderData> headers = LoadAllHeaders();
+
+    public static void Save(GameData data, int saveSlot)
     {
         string json = JsonUtility.ToJson(data);
-        string encryptedJson = Encrypt(json, encryptionKey);
+        string encryptedJson = Encrypt(json, ENCRYPTION_KEY);
         File.WriteAllText(SavePath(saveSlot), encryptedJson);
+
+        SetHeader(new HeaderData(saveSlot, data));
     }
 
-    public static SaveData Load(string saveSlot)
+    public static GameData Load(int saveSlot)
     {
         string filePath = SavePath(saveSlot);
         if (File.Exists(filePath))
         {
             string encryptedJson = File.ReadAllText(filePath);
-            string json = Decrypt(encryptedJson, encryptionKey);
-            return JsonUtility.FromJson<SaveData>(json);
+            string json = Decrypt(encryptedJson, ENCRYPTION_KEY);
+            return JsonUtility.FromJson<GameData>(json);
         }
         return null;
     }
 
-    public static void Delete(string saveSlot)
+    public static GameData LoadLatest()
     {
-        string path = SavePath(saveSlot);
-        if (File.Exists(path)) File.Delete(path);
-    }
+        List<HeaderData> headers = LoadAllHeaders();
 
-    public static SaveData LoadLatest()
-    {
-        string[] saveFiles = Directory.GetFiles(Application.persistentDataPath, "*.sav"); //TODO change this
-
-        string latestFile = null;
+        int latestSaveSlot = -1;
         DateTime latestTime = DateTime.MinValue;
 
-        foreach (string file in saveFiles)
+        foreach (HeaderData header in headers)
         {
-            DateTime lastModified = File.GetLastWriteTime(file);
+            DateTime lastModified = header.lastUpdate;
             if (lastModified > latestTime)
             {
                 latestTime = lastModified;
-                latestFile = file;
+                latestSaveSlot = header.slot;
             }
         }
 
-        if (latestFile != null)
-        {
-            return Load(latestFile);
-        }
+        return latestSaveSlot == -1 ? null : Load(latestSaveSlot);
+    }
 
-        return null;
+    public static void Delete(int saveSlot)
+    {
+        string path = SavePath(saveSlot);
+        if (File.Exists(path)) File.Delete(path);
+        headers.Remove(GetHeader(saveSlot));
+    }
+
+    public static HeaderData GetHeader(int saveSlot)
+    {
+        return headers.Find(header => header.slot == saveSlot);
+    }
+
+    public static void SetHeader(HeaderData header)
+    {
+        headers.RemoveAll(headerData => headerData.slot == header.slot);
+        headers.Add(header);
+
+        SaveHeaders();
+    }
+
+    private static void SaveHeaders()
+    {
+        string json = JsonUtility.ToJson(headers);
+        File.WriteAllText(HEADERS_PATH, json);
+    }
+
+    private static List<HeaderData> LoadAllHeaders()
+    {
+        string json = File.ReadAllText(HEADERS_PATH);
+        return JsonUtility.FromJson<List<HeaderData>>(json);
     }
 
     private static string Encrypt(string plainText, string key)
@@ -98,6 +126,6 @@ public class SaveSystem : MonoBehaviour
         using MemoryStream ms = new(cipherBytes);
         using CryptoStream cs = new(ms, decryptor, CryptoStreamMode.Read);
         using StreamReader reader = new(cs);
-        return reader.ReadToEnd(); // Decrypted plaintext
+        return reader.ReadToEnd();
     }
 }

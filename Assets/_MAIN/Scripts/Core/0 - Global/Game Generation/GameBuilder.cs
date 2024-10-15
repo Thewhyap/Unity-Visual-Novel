@@ -18,12 +18,12 @@ public class GameBuilder : MonoBehaviour
         }
     }
 
-    public void CreateGameWithData(SaveData data = null)
+    public void CreateGameWithData(GameData data = null)
     {
         if (data == null)
         {
             //int run = GlobalData.Instance.IncreaseRunCount();
-            data = new SaveData(0); //TODO use run instead of 0
+            data = new GameData(0); //TODO use run instead of 0
         }
 
         //GlobalData.Instance.SetSaveData(data);

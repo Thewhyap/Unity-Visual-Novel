@@ -11,6 +11,8 @@ public class SettingsManager : MonoBehaviour
         PreviousScene = SceneManager.GetActiveScene().name;
         DefaultTab = defaultTab;
 
+        ScreenshotManager.Instance.TakeScreenshot("lastScreenshot"); //TODO
+
         SceneManager.LoadScene("SettingsScene");
     }
 }
